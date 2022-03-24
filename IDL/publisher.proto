@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package publisher;
+
+option optimize_for = SPEED;
+
+import "google/protobuf/empty.proto";
+
+
+message UserProperty{
+	bytes k = 1;
+	bytes v = 2;
+}
+
+message PublishRequest {
+	bool dup = 1;
+	int32  qos = 2;
+	bool retained = 3;
+	string topic = 4;
+	bytes playload = 5;
+	string content_type = 6;
+	bytes corrlation_data = 7;
+	int32 message_expiry = 8;
+	int32 payload_format = 9;
+	string response_topic = 10;
+	repeated uint32 subscription_identifier = 11 [packed = true];
+	repeated UserProperty user_properties = 12;
+	string from_client_id = 13;
+	int64 create_at = 14;
+	string id = 15;
+}
+
+
+service PublishService{
+    rpc Publish(PublishRequest) returns (google.protobuf.Empty);
+	rpc PublishStream(stream PublishRequest) returns (google.protobuf.Empty);
+}

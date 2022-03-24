@@ -1,0 +1,28 @@
+[package]
+name = "nxctl"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap  = {version = "3", features = ["derive"]}
+tokio = {version = "1", features = ["full"]}
+async-trait = "0.1.52"
+anyhow = "1"
+prettytable-rs = "0.8.0"
+serde = {version = "1.0.133", features = ["derive"]}
+serde_json = "1.0.74"
+bytes = "1" # 高效处理网络 buffer 的库
+prost = "0.9.0" # 处理 protobuf 的代码
+futures = "0.3"
+tonic = "0.6"
+futures-core = "0.3"
+futures-util = "0.3"
+tokio-stream = "0.1"
+async-stream = "0.3.2"
+reqwest = { version = "0.11", features = ["json"] }
+
+[build-dependencies]
+prost-build = "0.9.0" # 编译 protobuf
+tonic-build = { version = "0.6", features = ["prost"] }

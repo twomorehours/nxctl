@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package acceptor;
+
+option optimize_for = SPEED;
+
+
+message userProperty{
+	bytes K = 1;
+	bytes V = 2;
+}
+
+message clientMsg{
+    string clientid = 1;
+    string msgid = 2;
+}
+
+message publish {
+	bool dup = 1;
+	int32  qos = 2;
+	bool retained = 3;
+	string topic = 4;
+	bytes playload = 5;
+	string contenttype = 6;
+	bytes corrlationData = 7;
+	int32 messageExpiry = 8;
+	int32 payloadFormat = 9;
+	string responseTopic = 10;
+	repeated uint32 SubscriptionIdentifier = 11;
+	repeated userProperty userProperties = 12;	
+	int64 create_at = 13;
+	string Id = 14;
+}
+
+message PublishRequest {
+	repeated clientMsg clientmsg = 1;
+	publish publish = 2; 
+	
+}
+
+message PublishStreamRequest {
+	clientMsg clientmsg = 1;
+	publish publish = 2; 
+	
+}
+
+message Response {
+  int32 code = 1;
+  string msg = 2;
+}
+ 
+
+message KickoffRequest {
+	string clientid = 1;
+	bool cleanSession = 2;
+}
+
+message ClientInfoRequest {
+        string clientid = 1;
+}
+
+message ClientInfo {
+	int32 queueMax = 1;
+	int32 queueCnt = 2;	
+	int32 recvFlightMax = 3;	
+	int32 recvFlightCnt = 4;	
+	int32 sendFlightMax = 5;
+	int32 sendFlightCnt = 6;
+	repeated string topics = 7;
+}
+
+message ClientInfoResponse {
+	int32 code = 1;
+	ClientInfo clientInfo = 2;
+}
+
+service AcceptorService{
+    rpc Publish(PublishRequest) returns (Response);
+	rpc PublishStream(stream PublishStreamRequest) returns (Response);
+    rpc Kickoff(KickoffRequest)returns (Response);
+    rpc GetClientInfo(ClientInfoRequest)returns (ClientInfoResponse);
+}

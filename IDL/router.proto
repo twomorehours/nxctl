@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package router;
+
+option optimize_for = SPEED;
+
+import "google/protobuf/empty.proto";
+
+message PutRequest {
+  string clientid = 1;
+  AcceptorInfo acceptor_info = 2;
+}
+
+message AcceptorInfo {
+  string addr = 1;
+  string id = 2;
+}
+
+message BatchGetRequest {
+  repeated string clientid_list = 1;
+}
+
+message GetRequest {
+  string clientid = 1;
+}
+
+message GetResponse {
+  AcceptorInfo acceptor_info = 1;
+}
+
+message BatchGetResponse {
+  map<string,AcceptorInfo> client_acceptor_map = 1;
+}
+
+message StreamGetResponse {
+  map<string,string> client_map = 1;
+}
+
+message DelRequest {
+  string clientid = 1;
+  string addr = 2;
+}
+
+service RouteService{
+    rpc Put(PutRequest) returns (google.protobuf.Empty);
+    rpc BatchGet(BatchGetRequest) returns (BatchGetResponse);
+    rpc GetStream(stream GetRequest) returns (StreamGetResponse);
+    rpc Get(GetRequest) returns (GetResponse);
+    rpc Del(DelRequest) returns (google.protobuf.Empty);
+}

@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package pubsub;
+
+option optimize_for = SPEED;
+
+// for rpc server
+
+message topicfilter {
+	string topic = 1;
+    int32 qos = 2;
+}
+
+message sub_request {
+  string clientid = 1;
+  repeated topicfilter topicfilters = 2;
+}
+
+message unsub_request {
+  string clientid = 1;
+  repeated string topicfilters = 2;
+}
+
+message sub_response {
+  repeated int32 codes = 1;
+}
+
+message unsub_response {
+  repeated int32 codes = 2;
+}
+
+message pub_request {
+  string topic = 1;
+  int32 qos = 2; // the field will be ignored when used as UpdateTopic's parameter
+  bytes retain = 3;
+}
+
+message retain_request {
+  repeated string topicfilters = 1;
+}
+
+message retain_info {
+  string topic = 1;
+  bytes retain = 2;
+}
+
+message retain_response {
+  repeated retain_info retains = 1;
+}
+
+message getsub_request {
+  string topic = 1;
+}
+
+message getsub_response {
+  repeated string subs = 1;
+}
+
+message getsub_stream_response {
+  int32 err = 1; // err = 0 indicates no error occurs
+  repeated string subs = 2;
+}
+
+message getsub_stream_responses {
+  repeated getsub_stream_response subs = 1;
+}
+
+message listsub_request {
+  string clientid = 1; // could be empty
+  repeated string topicfilters = 2; 
+  int32 qos = 3;       // if qos = -1, it will not be used to filter the responses
+}
+
+message subscription {
+  string clientid = 1;
+  string topic = 2;  // for share sub, it's $share/group_name/xxx/xxx
+                     // for normal sub, it's topic name
+  int32 qos = 3;
+  string match_topic = 4; // for share sub, it's a specific topic name
+                          // for normal sub, it's topic name
+}
+
+message listsub_response {
+  repeated subscription subscriptions = 1;
+}
+
+message search_request {
+  string topicfilter = 1;
+}
+
+message search_response {
+  repeated string topics = 1;
+}
+
+service PubSubService{
+  rpc Sub(sub_request) returns (sub_response);
+  rpc Unsub(unsub_request) returns (unsub_response);
+  rpc CreateTopic(pub_request) returns (google.protobuf.Empty);
+  rpc DelTopic(pub_request) returns (google.protobuf.Empty);
+  rpc UpdateTopic(pub_request) returns (google.protobuf.Empty);
+  rpc GetRetains(retain_request) returns (retain_response);
+  rpc GetSubs(getsub_request) returns (getsub_response);
+  rpc GetSubsStream(stream getsub_request) returns (getsub_stream_responses);
+  rpc ListSubs(listsub_request) returns (listsub_response);
+  rpc SearchTopic(search_request) returns (search_response);
+}
